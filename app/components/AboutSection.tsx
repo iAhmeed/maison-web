@@ -14,7 +14,7 @@ export default function AboutSection() {
                 transition={{ duration: 0.7, ease: 'easeOut' }}
                 className="text-4xl md:text-5xl font-extrabold text-center mb-14 tracking-tight"
             >
-                L'Essence de Maison Web
+                L&apos;Essence de Maison Web
             </motion.h2>
             <div className="space-y-10 text-lg leading-relaxed">
                 <motion.div

@@ -15,7 +15,7 @@ export default function FeedbackPage() {
 
     const recaptchaRef = useRef<ReCAPTCHA>(null);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError('');
         setSubmitted(false);
@@ -31,7 +31,7 @@ export default function FeedbackPage() {
         }
 
         try {
-            const res = await fetch('/api/feedbacks', {
+            const res = await fetch('/api/feedback', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ clientName, feedbackText, rating, captcha }),
@@ -47,8 +47,12 @@ export default function FeedbackPage() {
             setSubmitted(true);
             setCaptcha(null);
             if (recaptchaRef.current) recaptchaRef.current.reset();
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('Une erreur est survenue.');
+            }
         }
     };
 

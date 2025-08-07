@@ -37,8 +37,9 @@ const iconPool = [
     FiGrid,
 ];
 
+// Fix 1: Specify type for iconMap
 const getRandomIconMap = (services: Service[]) => {
-    const map: Record<string, any> = {};
+    const map: Record<string, React.ComponentType> = {};
     services.forEach((service) => {
         const randomIndex = Math.floor(Math.random() * iconPool.length);
         map[service._id] = iconPool[randomIndex];
@@ -48,7 +49,7 @@ const getRandomIconMap = (services: Service[]) => {
 
 export default function Services() {
     const [services, setServices] = useState<Service[]>([]);
-    const [iconMap, setIconMap] = useState<Record<string, any>>({});
+    const [iconMap, setIconMap] = useState<Record<string, React.ComponentType>>({});
     const [hovered, setHovered] = useState(false);
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const [flippedCardIndex, setFlippedCardIndex] = useState<number | null>(null);

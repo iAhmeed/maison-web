@@ -98,7 +98,7 @@ export default function FeedbackSection() {
                                                     />
                                                 ))}
                                             </div>
-                                            <p className="text-gray-300 text-sm mb-4 mt-4">"{fb.feedbackText}"</p>
+                                            <p className="text-gray-300 text-sm mb-4 mt-4">&quot;{fb.feedbackText}&quot;</p>
                                         </div>
                                         <p className="font-semibold text-sm text-right text-[var(--accent)] mb-2">
                                             – {fb.clientName}
