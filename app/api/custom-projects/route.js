@@ -9,7 +9,7 @@ export async function POST(request) {
         if (!service) {
             return Response.json({ status: "FAILED", message: "Service non trouvé !" }, { status: 404 });
         }
-        sendEmail(email, name, phone, budget, service, summary)
+        await sendEmail(email, name, phone, budget, service, summary)
         return Response.json({ status: "SUCCESS", message: "Demande de projet personnalisé envoyée avec succès !" }, { status: 200 });
     } catch (error) {
         return Response.json({ status: "FAILED", message: error.message }, { status: 500 });
