@@ -74,7 +74,7 @@ export default function Navbar() {
                 </ul>
 
                 <Link
-                    href="/avis-clients"
+                    href="/avis-client"
                     className={`px-5 py-2 rounded-full font-semibold shadow transition-all duration-300 whitespace-nowrap mx-8 ${scrolled
                         ? 'bg-[var(--accent)] text-white hover:bg-green-700'
                         : 'bg-[var(--accent)]/80 text-white hover:bg-[var(--accent)]'
