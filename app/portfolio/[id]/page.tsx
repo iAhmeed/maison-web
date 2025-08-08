@@ -47,7 +47,7 @@ async function getProject(id: string): Promise<Project | null> {
 }
 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
-    const id = params.id; // <-- Fix: do not use await here
+    const { id } = params;
     const project = await getProject(id);
     if (!project) return notFound();
 
