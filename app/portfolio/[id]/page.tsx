@@ -46,8 +46,9 @@ async function getProject(id: string): Promise<Project | null> {
     }
 }
 
-export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
-    const { id } = params;
+export default async function ProjectDetailPage(props: { params: Promise<{ id: string }> }
+) {
+    const { id } = await props.params;
     const project = await getProject(id);
     if (!project) return notFound();
 
