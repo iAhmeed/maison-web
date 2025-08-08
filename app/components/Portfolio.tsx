@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import MotionSection from './MotionSection';
+import { useRouter } from 'next/navigation';
 
 interface Project {
     _id: string;
@@ -21,11 +22,12 @@ interface Project {
 export default function Portfolio() {
     const [projects, setProjects] = useState<Project[]>([]);
     const containerRef = useRef<HTMLDivElement>(null);
-    const [matrixCols, setMatrixCols] = useState(4);
+    const [matrixCols] = useState(4);
 
     // Track which card is hovered and its image index
     const [hoveredCard, setHoveredCard] = useState<string | null>(null);
     const [imgIndices, setImgIndices] = useState<number[]>([]);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -61,7 +63,6 @@ export default function Portfolio() {
     }, [hoveredCard, projects]);
 
     // Calculate rows based on number of projects and columns
-    const matrixRows = Math.ceil(projects.length / matrixCols);
 
     // Mouse move handler for panning
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -147,7 +148,7 @@ export default function Portfolio() {
                     style={{
                         height: '500px',
                         width: '100%',
-                        cursor: 'default', // normal cursor in container
+                        cursor: 'default',
                         background: 'linear-gradient(135deg, #181c24 0%, #232a3a 100%)',
                         boxShadow: '0 8px 32px 0 rgba(34,197,94,0.10), 0 1.5px 8px 0 rgba(0,0,0,0.18)',
                     }}
@@ -165,6 +166,7 @@ export default function Portfolio() {
                                 style={{ cursor: 'pointer' }}
                                 onMouseEnter={() => setHoveredCard(project._id)}
                                 onMouseLeave={() => setHoveredCard(null)}
+                                onClick={() => router.push(`/portfolio/${project._id}`)} // <-- Add this line
                             >
                                 <div className="relative w-full h-40 mb-4 overflow-hidden rounded-xl">
                                     {project.images?.map((img, i) => (
@@ -185,10 +187,11 @@ export default function Portfolio() {
                                 </p>
                                 {project.link && (
                                     <a
-                                        href={project.link}
+                                        href={project.link.startsWith('http') ? project.link : `https://${project.link}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-[var(--accent)] hover:underline text-sm font-medium"
+                                        onClick={e => e.stopPropagation()} // Prevent card click
                                     >
                                         Voir le projet →
                                     </a>
@@ -196,6 +199,16 @@ export default function Portfolio() {
                             </div>
                         ))}
                     </div>
+                </div>
+
+                {/* Move the button here, under the projects container */}
+                <div className="flex justify-center mt-8">
+                    <button
+                        onClick={() => router.push('/portfolio')}
+                        className="bg-[var(--accent)] hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold shadow transition cursor-pointer"
+                    >
+                        Voir tous les projets
+                    </button>
                 </div>
             </div>
         </MotionSection>

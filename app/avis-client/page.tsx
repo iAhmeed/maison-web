@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { FaUser, FaCommentDots, FaStar, FaPaperPlane, FaRegSmileBeam, FaRegStickyNote } from 'react-icons/fa';
 import ReCAPTCHA from 'react-google-recaptcha';
+import { useRouter } from 'next/navigation';
 
 export default function FeedbackPage() {
     const [clientName, setClientName] = useState('');
@@ -14,6 +15,7 @@ export default function FeedbackPage() {
     const [captcha, setCaptcha] = useState<string | null>(null);
 
     const recaptchaRef = useRef<ReCAPTCHA>(null);
+    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -31,7 +33,7 @@ export default function FeedbackPage() {
         }
 
         try {
-            const res = await fetch('/api/feedback', {
+            const res = await fetch('/api/feedbacks', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ clientName, feedbackText, rating, captcha }),
@@ -47,6 +49,9 @@ export default function FeedbackPage() {
             setSubmitted(true);
             setCaptcha(null);
             if (recaptchaRef.current) recaptchaRef.current.reset();
+
+            // Redirect to home after successful submit
+            router.push('/');
         } catch (err) {
             if (err instanceof Error) {
                 setError(err.message);
@@ -80,7 +85,7 @@ export default function FeedbackPage() {
                 {submitted && (
                     <div className="mb-4 p-3 bg-green-100 text-green-800 rounded flex items-center gap-2">
                         <FaRegSmileBeam color="#16a34a" />
-                        Merci pour votre retour ! Il sera affiché une fois approuvé.
+                        Merci pour votre retour !
                     </div>
                 )}
 
@@ -160,7 +165,7 @@ export default function FeedbackPage() {
 
                     <button
                         type="submit"
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full flex items-center justify-center gap-2 font-semibold"
+                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full flex items-center justify-center gap-2 font-semibold cursor-pointer"
                     >
                         <FaPaperPlane color="#ffffff" />
                         Soumettre mon avis

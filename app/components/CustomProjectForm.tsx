@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import MotionSection from './MotionSection';
 
 interface Service {
     _id: string;
@@ -68,8 +67,17 @@ export default function CustomProjectForm() {
     };
 
     return (
-        <MotionSection className="py-20 bg-[var(--background)] px-6" id="custom-project-form">
-            <div className="max-w-3xl mx-auto bg-[var(--card-bg)] rounded-2xl shadow-2xl border border-[var(--card-border)] p-8 backdrop-blur bg-opacity-90">
+        <section className="py-20 px-6" id="custom-project-form">
+            <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="max-w-3xl mx-auto rounded-2xl shadow-2xl border border-[var(--card-border)] p-8 backdrop-blur bg-opacity-90"
+                style={{
+                    background: "linear-gradient(135deg, #16232f 0%, #14532d 100%)",
+                }}
+            >
                 <motion.h2
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -189,7 +197,7 @@ export default function CustomProjectForm() {
                     <button
                         type="submit"
                         disabled={status === 'sending'}
-                        className="bg-[var(--accent)] text-white px-6 py-3 rounded-full font-semibold hover:bg-green-700 transition w-full shadow-lg"
+                        className="bg-[var(--accent)] text-white px-6 py-3 rounded-full font-semibold hover:bg-green-700 transition w-full shadow-lg cursor-pointer disabled:cursor-not-allowed"
                     >
                         {status === 'sending'
                             ? 'Envoi en cours...'
@@ -204,7 +212,7 @@ export default function CustomProjectForm() {
                         </p>
                     )}
                 </form>
-            </div>
-        </MotionSection>
+            </motion.div>
+        </section>
     );
 }
