@@ -33,9 +33,8 @@ interface Project {
 
 async function getProject(id: string): Promise<Project | null> {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/projects/${id}`, {
-            cache: "no-store",
-        });
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL : ""}/api/projects/${id}`, { cache: "no-store" });
+
 
         if (!res.ok) return null;
 
