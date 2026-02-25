@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring, animate } from 'framer-motion';
 import Image from 'next/image';
 import MotionSection from './MotionSection';
 import { useRouter } from 'next/navigation';
@@ -22,7 +22,17 @@ interface Project {
 export default function Portfolio() {
     const [projects, setProjects] = useState<Project[]>([]);
     const containerRef = useRef<HTMLDivElement>(null);
+    const innerRef = useRef<HTMLDivElement>(null);
     const [matrixCols] = useState(4);
+
+    // Motion values for smooth panning
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
+
+    // Spring configuration for smoothness
+    const springConfig = { damping: 30, stiffness: 100 };
+    const translateX = useSpring(mouseX, springConfig);
+    const translateY = useSpring(mouseY, springConfig);
 
     // Track which card is hovered and its image index
     const [hoveredCard, setHoveredCard] = useState<string | null>(null);
@@ -62,67 +72,58 @@ export default function Portfolio() {
         return () => clearInterval(timer);
     }, [hoveredCard, projects]);
 
-    // Calculate rows based on number of projects and columns
+    // Initial centering
+    useEffect(() => {
+        if (projects.length > 0) {
+            const timer = setTimeout(() => {
+                handleMouseLeave();
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [projects]);
 
     // Mouse move handler for panning
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         const container = containerRef.current;
-        if (!container) return;
+        const inner = innerRef.current;
+        if (!container || !inner) return;
 
-        const { left, top, width, height } = container.getBoundingClientRect();
-        const x = e.clientX - left;
-        const y = e.clientY - top;
+        const { left, top, width: containerWidth, height: containerHeight } = container.getBoundingClientRect();
 
-        // Calculate percent position, clamp between 0 and 1
-        const percentX = Math.max(0, Math.min(1, x / width));
-        const percentY = Math.max(0, Math.min(1, y / height));
+        // Account for the scale[1.15]
+        const scale = 1.15;
+        const contentWidth = inner.offsetWidth * scale;
+        const contentHeight = inner.offsetHeight * scale;
 
-        // Calculate scroll positions so mouse at edge shows last projects fully
-        const maxScrollLeft = container.scrollWidth - container.clientWidth;
-        const maxScrollTop = container.scrollHeight - container.clientHeight;
+        const maxMoveX = contentWidth - containerWidth;
+        const maxMoveY = contentHeight - containerHeight;
 
-        container.scrollTo({
-            left: percentX * maxScrollLeft,
-            top: percentY * maxScrollTop,
-            behavior: 'smooth',
-        });
+        if (maxMoveX <= 0 && maxMoveY <= 0) return;
+
+        const xPercent = (e.clientX - left) / containerWidth;
+        const yPercent = (e.clientY - top) / containerHeight;
+
+        // Target positions (negative to move content)
+        mouseX.set(-xPercent * maxMoveX);
+        mouseY.set(-yPercent * maxMoveY);
     };
 
-    // Center the matrix when not hovering (smooth, not too slow)
+    // Center the matrix when not hovering
     const handleMouseLeave = () => {
         const container = containerRef.current;
-        if (!container) return;
+        const inner = innerRef.current;
+        if (!container || !inner) return;
 
-        const maxScrollLeft = container.scrollWidth - container.clientWidth;
-        const maxScrollTop = container.scrollHeight - container.clientHeight;
+        const scale = 1.15;
+        const contentWidth = inner.offsetWidth * scale;
+        const contentHeight = inner.offsetHeight * scale;
 
-        const targetLeft = maxScrollLeft / 2;
-        const targetTop = maxScrollTop / 2;
-        const duration = 700; // ms, total animation time
-        const startLeft = container.scrollLeft;
-        const startTop = container.scrollTop;
-        const deltaLeft = targetLeft - startLeft;
-        const deltaTop = targetTop - startTop;
-        let start: number | null = null;
+        const targetX = -(contentWidth - container.offsetWidth) / 2;
+        const targetY = -(contentHeight - container.offsetHeight) / 2;
 
-        function animateScroll(timestamp: number) {
-            if (!start) start = timestamp;
-            const elapsed = timestamp - start;
-            // Use ease-out cubic for gradual slow down
-            const t = Math.min(elapsed / duration, 1);
-            const ease = 1 - Math.pow(1 - t, 3);
-
-            if (container) {
-                container.scrollLeft = startLeft + deltaLeft * ease;
-                container.scrollTop = startTop + deltaTop * ease;
-            }
-
-            if (t < 1) {
-                requestAnimationFrame(animateScroll);
-            }
-        }
-
-        requestAnimationFrame(animateScroll);
+        animate(mouseX, targetX, { duration: 0.8, ease: "easeOut" });
+        animate(mouseY, targetY, { duration: 0.8, ease: "easeOut" });
+        setHoveredCard(null);
     };
 
     return (
@@ -153,10 +154,14 @@ export default function Portfolio() {
                         boxShadow: '0 8px 32px 0 rgba(34,197,94,0.10), 0 1.5px 8px 0 rgba(0,0,0,0.18)',
                     }}
                 >
-                    <div
-                        className="grid gap-6 w-max scale-[1.15] transition-transform duration-500"
+                    <motion.div
+                        ref={innerRef}
+                        className="grid gap-6 w-max"
                         style={{
                             gridTemplateColumns: `repeat(${matrixCols}, minmax(300px, 1fr))`,
+                            x: translateX,
+                            y: translateY,
+                            scale: 1.15,
                         }}
                     >
                         {projects.map((project, idx) => (
@@ -198,7 +203,7 @@ export default function Portfolio() {
                                 )}
                             </div>
                         ))}
-                    </div>
+                    </motion.div>
                 </div>
 
                 {/* Move the button here, under the projects container */}

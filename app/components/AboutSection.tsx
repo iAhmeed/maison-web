@@ -77,10 +77,10 @@ export default function AboutSection() {
                             <li className="flex items-center gap-3">
                                 <Mail className="w-5 h-5 text-blue-600" />
                                 <a
-                                    href="mailto:contact@maisonweb.fr"
+                                    href="mailto:contact@maison-web.fr"
                                     className="font-mono hover:underline transition"
                                 >
-                                    contact@maisonweb.fr
+                                    contact@maison-web.fr
                                 </a>
                             </li>
                             <li className="flex items-center gap-3">
