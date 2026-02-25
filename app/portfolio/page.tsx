@@ -75,9 +75,13 @@ export default function PortfolioPage() {
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-                {projects.map((project) => (
-                    <div
+                {projects.map((project, index) => (
+                    <motion.div
                         key={project._id}
+                        initial={{ opacity: 0, y: 50 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
+                        viewport={{ once: true, margin: "-100px" }}
                         className="group bg-green-200 rounded-2xl shadow-lg hover:shadow-2xl transition duration-300 overflow-hidden border border-gray-100 relative"
                     >
                         <Link href={`/portfolio/${project._id}`}>
@@ -122,7 +126,7 @@ export default function PortfolioPage() {
                         <span className="absolute top-4 right-4 bg-green-600 text-white text-xs px-3 py-1 rounded-full shadow font-semibold">
                             {project.type}
                         </span>
-                    </div>
+                    </motion.div>
                 ))}
             </div>
 
