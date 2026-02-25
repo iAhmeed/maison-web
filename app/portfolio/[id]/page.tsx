@@ -1,20 +1,19 @@
-// app/portfolio/[id]/page.tsx
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { FaRegStar } from "react-icons/fa"; // <-- Add this import
+import { FaRegStar } from "react-icons/fa";
 import CustomProjectForm from "../../components/CustomProjectForm";
+import dbConnect from "@/lib/mongoose";
+import ProjectModel from "@/models/Project";
 
 // Fetch all projects for the "More projects" section
 async function getProjects(): Promise<Project[]> {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/projects`, {
-            cache: "no-store",
-        });
-        if (!res.ok) return [];
-        const data = await res.json();
-        return data.projects;
+        await dbConnect();
+        const projects = await ProjectModel.find({}).lean();
+        return JSON.parse(JSON.stringify(projects));
     } catch (err) {
+        console.error("Error fetching projects:", err);
         return [];
     }
 }
@@ -33,14 +32,12 @@ interface Project {
 
 async function getProject(id: string): Promise<Project | null> {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL : ""}/api/projects/${id}`, { cache: "no-store" });
-
-
-        if (!res.ok) return null;
-
-        const data = await res.json();
-        return data.project;
+        await dbConnect();
+        const project = await ProjectModel.findById(id).lean();
+        if (!project) return null;
+        return JSON.parse(JSON.stringify(project));
     } catch (err) {
+        console.error(`Error in getProject(${id}):`, err);
         return null;
     }
 }
